@@ -55,7 +55,7 @@ int main()
 
 	int range = 10;
 
-	cout << "Enter 5 integers in any order with values 0-9:" << endl;
+	cout << "Enter " << arraySize << "integers in any order with values 0 - 9:" << endl;
 	for (int i = 0; i < arraySize; i++)
 	{
 		cin >> myArray[i];
