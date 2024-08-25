@@ -1,4 +1,4 @@
-// The Edmonds-Karp algorithm is an implementation of the Floyd-Fulkerson method that uses BFS to find the shortest augmenting path in terms of the number of edges. 
+// The Edmonds-Karp algorithm is an implementation of the Ford-Fulkerson method that uses BFS to find the shortest augmenting path in terms of the number of edges. 
 // This implementation guarantees an O(V + E^2) time complexity, whwre V is the number of vertices and E is the number of edges.
 
 #include <iostream>
