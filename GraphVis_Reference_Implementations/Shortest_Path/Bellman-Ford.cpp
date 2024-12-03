@@ -37,7 +37,12 @@ int main() {
 
     int result = solution.findCheapestPrice(cities, flights, source, destination, stops);
 
-    std::cout << result << std::endl;
+    if (result == -1) {
+        std::cout << "No route available within " << stops << " stops." << std::endl;
+    } else {
+        std::cout << "Cheapest price from " << source << " to " << destination 
+                  << " with at most " << stops << " stops: " << result << std::endl;
+    }
 
     return 0;
 }
