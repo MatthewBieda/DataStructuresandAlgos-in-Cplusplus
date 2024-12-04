@@ -1,94 +1,97 @@
 #include <vector>
-#include <tuple> 
+#include <tuple>
 #include <iostream>
 #include <numeric>
 #include <algorithm>
+#include <cmath>
 
+// Union-Find (Disjoint Set Union) Data Structure
 class UnionFind {
 private:
-    std::vector<int> parent;
-    std::vector<int> rank;
+    std::vector<int> parent;  // Parent of each node
+    std::vector<int> rank;    // Rank (depth) of each node's tree
 
 public:
-    UnionFind(int size): parent(size), rank(size, 0) {
-        std::iota(parent.begin(), parent.end(), 0);
+    // Initialize Union-Find for 'size' nodes
+    UnionFind(int size) : parent(size), rank(size, 0) {
+        std::iota(parent.begin(), parent.end(), 0); // Set each node as its own parent
     }
 
-    int set_find(int x) {
+    // Find the root of a set containing 'x', with path compression
+    int find(int x) {
         if (parent[x] != x) {
-            parent[x] = set_find(parent[x]);
+            parent[x] = find(parent[x]); // Path compression
         }
-
         return parent[x];
     }
 
-    void set_union(int x, int y) {
-        int rootX = set_find(x);
-        int rootY = set_find(y);
+    // Union two sets containing 'x' and 'y', using union by rank
+    void unite(int x, int y) {
+        int rootX = find(x);
+        int rootY = find(y);
 
-        if (rank[rootX] < rank[rootY]) {
-            parent[rootX] = rootY;
-        } else if (rank[rootX] > rank[rootY]) {
-            parent[rootY] = rootX;
-        } else {
-            parent[rootY] = rootX;
-            rank[rootX]++;
+        if (rootX != rootY) {
+            if (rank[rootX] < rank[rootY]) {
+                parent[rootX] = rootY;
+            } else if (rank[rootX] > rank[rootY]) {
+                parent[rootY] = rootX;
+            } else {
+                parent[rootY] = rootX;
+                rank[rootX]++;
+            }
         }
     }
 
-    bool set_connected(int x, int y) {
-        return set_find(x) == set_find(y);
+    // Check if 'x' and 'y' are in the same set
+    bool connected(int x, int y) {
+        return find(x) == find(y);
     }
 };
 
-
 class Solution {
 public:
-    int minCostConnectPoints(std::vector<std::vector<int>>& points) {
+    // Function to compute the minimum cost to connect all points
+    int minCostConnectPoints(const std::vector<std::vector<int>>& points) {
         int n = points.size();
+        std::vector<std::tuple<int, int, int>> edges;
 
-        std::vector<std::tuple<int,int,int>> adj;
-
+        // Step 1: Generate all edges with their weights (Manhattan distance)
         for (int i = 0; i < n; ++i) {
             for (int j = i + 1; j < n; ++j) {
                 int weight = std::abs(points[i][0] - points[j][0]) + std::abs(points[i][1] - points[j][1]);
-
-                adj.push_back({weight, i, j});
+                edges.emplace_back(weight, i, j);
             }
         }
 
-        std::sort(adj.begin(), adj.end());
+        // Step 2: Sort edges by weight (non-decreasing order)
+        std::sort(edges.begin(), edges.end());
 
-        UnionFind dsu(n);
-
+        // Step 3: Initialize Union-Find and process edges
+        UnionFind uf(n);
         int mstCost = 0;
         int edgesUsed = 0;
 
-        for (const auto[weight, node1, node2]: adj) {
-            if (edgesUsed == n - 1) {
-                break;
-            }
+        for (const auto& [weight, u, v] : edges) {
+            if (edgesUsed == n - 1) break; // MST complete with (n-1) edges
 
-            if (!dsu.set_connected(node1, node2)) {
-                dsu.set_union(node1, node2);
+            if (!uf.connected(u, v)) {
+                uf.unite(u, v);
                 mstCost += weight;
                 ++edgesUsed;
             }
         }
 
-        return mstCost;
+        return mstCost; // Total cost of the MST
     }
-
 };
 
 int main() {
     Solution solution;
-
     std::vector<std::vector<int>> points = {{3, 12}, {-2, 5}, {-4, 1}};
-  
+
     int mstCost = solution.minCostConnectPoints(points);
-    
-    std::cout << mstCost << std::endl;
+
+    std::cout << "Minimum cost to connect all points: " << mstCost << std::endl;
 
     return 0;
 }
