@@ -1,49 +1,67 @@
 #include <vector>
 #include <iostream>
 
-using namespace std;
-
 class Solution {
 public:
-    bool validPath(int n, vector<vector<int>>& edges, int start, int end) {
-        vector<vector<int>> adjacency_list(n);
-        for (vector<int> edge : edges) {
-            adjacency_list[edge[0]].push_back(edge[1]);
-            adjacency_list[edge[1]].push_back(edge[0]);
+    // Function to determine if a valid path exists between `start` and `end` in an undirected graph
+    bool validPath(int n, const std::vector<std::vector<int>>& edges, int start, int end) {
+        // Edge case: If there are no edges, the path is valid only if `start == end`
+        if (edges.empty()) {
+            return start == end;
         }
-        
-        vector<bool> seen(n, false);
-        return dfs(adjacency_list, start, end, seen);
+
+        // Step 1: Build the adjacency list for the graph
+        std::vector<std::vector<int>> adjacencyList(n);
+        for (const auto& edge : edges) {
+            adjacencyList[edge[0]].push_back(edge[1]);
+            adjacencyList[edge[1]].push_back(edge[0]); // Undirected graph
+        }
+
+        // Step 2: Use a visited array to prevent revisiting nodes
+        std::vector<bool> visited(n, false);
+
+        // Step 3: Perform DFS
+        return dfs(adjacencyList, start, end, visited);
     }
-    
+
 private:
-    bool dfs(vector<vector<int>>& adj, int node, int end, vector<bool>& seen) {
-        if (node == end) return true;
-        if (seen[node]) return false;
-        
-        seen[node] = true;
-        
-        for (int neighbor : adj[node]) {
-            if (!seen[neighbor] && dfs(adj, neighbor, end, seen)) {
-                return true;
+    // Recursive DFS function
+    bool dfs(const std::vector<std::vector<int>>& adj, int current, int target, std::vector<bool>& visited) {
+        // If we reach the target node, a path exists
+        if (current == target) {
+            return true;
+        }
+
+        // Mark the current node as visited
+        visited[current] = true;
+
+        // Visit all unvisited neighbors
+        for (int neighbor : adj[current]) {
+            if (!visited[neighbor]) {
+                if (dfs(adj, neighbor, target, visited)) {
+                    return true; // Stop searching once a path is found
+                }
             }
         }
-        
-        return false;
+
+        return false; // No path found
     }
 };
 
-
 int main() {
     Solution solution;
-    int n = 3;
-    int start = 0;
-    int destination = 2;
 
-    vector<vector<int>> edges = {{0,1}, {1,2}, {2,0}};
-  
+    int n = 3; // Number of nodes
+    int start = 0; // Starting node
+    int destination = 2; // Target node
+
+    std::vector<std::vector<int>> edges = {
+        {0, 1}, {1, 2}, {2, 0}
+    }; // Edges in the graph
+
     bool isValid = solution.validPath(n, edges, start, destination);
-    cout << isValid << endl;
+
+    std::cout << (isValid ? "Path exists" : "No path exists") << std::endl;
 
     return 0;
 }

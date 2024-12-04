@@ -2,56 +2,66 @@
 #include <queue>
 #include <iostream>
 
-using namespace std;
-
 class Solution {
 public:
-    bool validPath(int n, vector<vector<int>>& edges, int start, int end) {
-        vector<vector<int>> adjacency_list(n);
-        for (vector<int> edge : edges) {
-            adjacency_list[edge[0]].push_back(edge[1]);
-            adjacency_list[edge[1]].push_back(edge[0]);
+    // Function to determine if a valid path exists between `start` and `end` in an undirected graph
+    bool validPath(int n, const std::vector<std::vector<int>>& edges, int start, int end) {
+        // Edge case: If the graph has no edges, the path is valid only if start == end
+        if (edges.empty()) {
+            return start == end;
         }
-        
-        queue<int> q;
+
+        // Step 1: Build the adjacency list for the graph
+        std::vector<std::vector<int>> adjacencyList(n);
+        for (const auto& edge : edges) {
+            adjacencyList[edge[0]].push_back(edge[1]);
+            adjacencyList[edge[1]].push_back(edge[0]);
+        }
+
+        // Step 2: Perform BFS to check for a path from `start` to `end`
+        std::queue<int> q;
+        std::vector<bool> visited(n, false);
+
         q.push(start);
-        vector<bool> seen(n);
-        seen[start] = true;
-        
+        visited[start] = true;
+
         while (!q.empty()) {
-            // Get the current node.
-            int node = q.front();
+            int currentNode = q.front();
             q.pop();
-            
-            // Check if we have reached the target node.
-            if (node == end) {
+
+            // Check if we reached the target node
+            if (currentNode == end) {
                 return true;
             }
-            
-            // Add all neighbors to the stack.
-            for (int neighbor : adjacency_list[node]) {
-                // Check if neighbor has been added to the queue before.
-                if (!seen[neighbor]) {
-                    seen[neighbor] = true;
+
+            // Visit all unvisited neighbors
+            for (int neighbor : adjacencyList[currentNode]) {
+                if (!visited[neighbor]) {
+                    visited[neighbor] = true;
                     q.push(neighbor);
                 }
             }
         }
-        
+
+        // If we exhaust the BFS without finding `end`, no path exists
         return false;
     }
 };
 
 int main() {
     Solution solution;
-    int n = 3;
-    int start = 0;
-    int destination = 2;
 
-    vector<vector<int>> edges = {{0,1}, {1,2}, {2,0}};
-  
+    int n = 3; // Number of nodes
+    int start = 0; // Starting node
+    int destination = 2; // Target node
+
+    std::vector<std::vector<int>> edges = {
+        {0, 1}, {1, 2}, {2, 0}
+    }; // Edges in the graph
+
     bool isValid = solution.validPath(n, edges, start, destination);
-    cout << isValid << endl;
+
+    std::cout << (isValid ? "Path exists" : "No path exists") << std::endl;
 
     return 0;
 }
