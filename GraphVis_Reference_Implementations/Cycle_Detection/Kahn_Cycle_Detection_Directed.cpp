@@ -4,50 +4,53 @@
 
 class Solution {
 public:
-    bool hasCycle(int numCourses, const std::vector<std::pair<int, int>>& prerequisites) {
-        std::vector<std::vector<int>> adj(numCourses);
-        std::vector<int> inDegree(numCourses, 0);
+    // Function to detect cycles in a directed graph using Kahn's Algorithm
+    bool hasCycle(int numCourses, const std::vector<std::vector<int>>& prerequisites) {
+        // Step 1: Initialize adjacency list and in-degree array
+        std::vector<std::vector<int>> adj(numCourses); // Adjacency list
+        std::vector<int> inDegree(numCourses, 0);      // In-degree array
 
-        // Build the adjacency list and compute in-degrees
-        for (const auto& [course, prereq] : prerequisites) {
-            adj[prereq].push_back(course); // Edge from prereq -> course
+        // Step 2: Build the graph
+        for (const auto& prereq : prerequisites) {
+            int course = prereq[0];
+            int dependency = prereq[1];
+            adj[dependency].push_back(course); // Edge from dependency -> course
             inDegree[course]++;
         }
 
-        // Initialize the queue with nodes having in-degree 0
-        std::queue<int> queue;
+        // Step 3: Initialize the queue with nodes having in-degree 0
+        std::queue<int> zeroInDegreeQueue;
         for (int i = 0; i < numCourses; ++i) {
             if (inDegree[i] == 0) {
-                queue.push(i);
+                zeroInDegreeQueue.push(i);
             }
         }
 
-        int processedNodes = 0;
-
-        // Process the nodes
-        while (!queue.empty()) {
-            int node = queue.front();
-            queue.pop();
+        // Step 4: Process nodes with in-degree 0
+        int processedNodes = 0; // Count of processed nodes
+        while (!zeroInDegreeQueue.empty()) {
+            int node = zeroInDegreeQueue.front();
+            zeroInDegreeQueue.pop();
             ++processedNodes;
 
+            // Reduce the in-degree of all neighbors
             for (const auto& neighbor : adj[node]) {
                 inDegree[neighbor]--;
-
                 if (inDegree[neighbor] == 0) {
-                    queue.push(neighbor);
+                    zeroInDegreeQueue.push(neighbor);
                 }
             }
         }
 
-        // If we processed all nodes, there's no cycle
-        return processedNodes != numCourses;
+        // Step 5: Check if all nodes were processed
+        return processedNodes != numCourses; // True if a cycle exists
     }
 };
 
 int main() {
     Solution solution;
     int numCourses = 4;
-    std::vector<std::pair<int, int>> prerequisites = {{1, 0}, {2, 0}, {3, 1}, {3, 2}};
+    std::vector<std::vector<int>> prerequisites = {{1, 0}, {2, 0}, {3, 1}, {3, 2}};
 
     if (solution.hasCycle(numCourses, prerequisites)) {
         std::cout << "The graph contains a cycle.\n";
