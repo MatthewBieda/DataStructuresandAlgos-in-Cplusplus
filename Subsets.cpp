@@ -1,10 +1,7 @@
 #include <iostream>
 #include <vector>
 
-using namespace std;
-
-// Function to generate all subsets
-void backtrack(int start, const vector<int>& nums, vector<int>& currentSubset, vector<vector<int>>& allSubsets) {
+void backtrack(int start, const std::vector<int>& nums, std::vector<int>& currentSubset, std::vector<std::vector<int>>& allSubsets) {
     // Add the current subset to the result
     allSubsets.push_back(currentSubset);
     
@@ -22,21 +19,20 @@ void backtrack(int start, const vector<int>& nums, vector<int>& currentSubset, v
 }
 
 int main() {
-    vector<int> nums = {1, 2, 8, 0, 4, 3, 5};  // Set of integers
-    vector<vector<int>> allSubsets;
-    vector<int> currentSubset;
+    std::vector<int> nums = {1, 2, 8, 0, 4, 3, 5};
+    std::vector<std::vector<int>> allSubsets;
+    std::vector<int> currentSubset;
     
     // Generate all subsets starting from index 0
     backtrack(0, nums, currentSubset, allSubsets);
     
-    // Print all subsets
-    cout << "Subsets:\n";
+    std::cout << "Subsets:\n";
     for (const auto& subset : allSubsets) {
-        cout << "[ ";
+        std::cout << "[ ";
         for (int num : subset) {
-            cout << num << " ";
+            std::cout << num << " ";
         }
-        cout << "]\n";
+        std::cout << "]\n";
     }
     
     return 0;
