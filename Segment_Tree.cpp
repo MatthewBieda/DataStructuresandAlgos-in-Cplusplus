@@ -18,16 +18,19 @@ public:
         }
     }
 
+
     // Update the value at index `pos`
     void update(int pos, int value) {
         pos += n;
         tree[pos] = value;
-        for (; pos > 1; pos /= 2) {
-            tree[pos / 2] = tree[pos] + tree[pos ^ 1];
+        
+        while (pos > 1) {
+            pos /= 2;
+            tree[pos] = tree[2 * pos] + tree[2 * pos + 1];
         }
     }
 
-    // Query the sum of the range [left, right)
+   // Query the sum of the range [left, right)
     int query(int left, int right) {
         int sum = 0;
         left += n;
